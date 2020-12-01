@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+
+    <!-- Material Design Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="covid-dashboard.css">
+    <title>Covid Dashboard</title>
+  </head>
+  <body>
+    <section class="container dashboard-container">
+      <div class="flex-center row header">
+        <h1>Covid Surveillance Dashboard</h1>
+        <div class="dropdown heading">
+          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Northeast Quad</button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <a class="dropdown-item" href="#">Southwest Quad</a>
+            <a class="dropdown-item" href="#">North Quad</a>
+            <a class="dropdown-item" href="#">East Quad</a>
+          </div>
+        </div>
+        <div class="dropdown">
+          <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Today</button>
+          <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+            <a class="dropdown-item" href="#">Change Date</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col col-lg-8">
+          <div class="row">
+            <div class="col col-lg-12"> 
+              <div class="content clinical">
+                <div class="row">
+                  <div class="flex-box col-lg-4">
+                    <p class="number">20</p>
+                    <p class="title">Current Positive/Symptomatic Cases*</p>
+                  </div>
+                  <div class="flex-box col-lg-4">
+                    <p class="number">5000</p>
+                    <p class="title">Residential Student Population</p>
+                  </div>
+                  <div class="flex-box col-lg-4">
+                    <p class="number">17,477</p>
+                    <p class="title">Cumulative Residential Student Tests Resulted</p>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="flex-box col-lg-4">
+                    <p class="number">315</p>
+                    <p class="title">Total Number of Students Recovered</p>
+                  </div>
+                  <div class="flex-box col-lg-4">
+                    <p class="number">0.40%</p>
+                    <p class="title">Current Percent Positive</p>
+                  </div>
+                  <div class="flex-box col-lg-4">
+                    <p class="number">215</p>
+                    <p class="title">Cumulative Residential Student Positive Results</p>
+                  </div>
+                </div>
+
+              </div>
+            </div> 
+          </div>
+          <div class="row">
+            <div class="col col-lg-6">
+              <div class="content wastewater">
+                <div class="flex"><h2>Wastewater Testing</h2><span class="material-icons" data-toggle="tooltip" data-placement="top" title="This is about wastewater testing!">info</span></div>
+                <div class="label-flex">
+                  <div class="dropdown heading">
+                    <button class="btn btn-interior dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Region #1</button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                      <a class="dropdown-item" href="#">Region #2</a>
+                      <a class="dropdown-item" href="#">Region #3</a>
+                      <a class="dropdown-item" href="#">Region #4</a>
+                    </div>
+                  </div>
+                  <div class="labels">
+                    <h5><span class="material-icons">brightness_1</span>Last Result</h5>
+                    <h5><span class="material-icons">brightness_1</span>Baseline</h5>
+                  </div>
+                </div>
+                <img src="img/wastewater-graph.png">
+              </div>
+            </div>
+            <div class="col col-lg-6">
+              <div class="content saliva">
+                <div class="flex"><h2>Saliva Testing</h2><span class="material-icons" data-toggle="tooltip" data-placement="top" title="This is about saliva testing!">info</span></div>
+                  <div class="row">
+                    <div class="flex-box col-lg-4">
+                      <p class="number">60</p>
+                      <p class="title">Tubes In</p>
+                    </div>
+                    <div class="flex-box col-lg-4">
+                      <p class="number">120</p>
+                      <p class="title">Tubes Out</p>
+                    </div>
+                    <div class="flex-box col-lg-4">
+                      <p class="number">2</p>
+                      <p class="title">Test Pools</p>
+                    </div>
+                  </div>
+                  <div class="flex saliva-test">
+                    <img class="saliva-img" src="img/saliva-test.png">
+                    <div class="labels">
+                      <h3>Test Results</h3>
+                      <h5><span class="material-icons">brightness_1</span>10 Negative</h5>
+                      <h5><span class="material-icons">brightness_1</span>90 Positive</h5>
+
+                    </div>
+                  </div>
+                
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col col-lg-4">
+          <div class="row">
+            <div class="col col-lg-12">
+              <div class="content covid-threat">
+                <div class="flex"><h2 class="dark">Covid Threat Level<span class="material-icons">brightness_1</span></h2></div>
+                <img src="img/covid-threat.png">
+                <p>Regular surveillance testing and standard security measures </p>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col col-lg-12">
+              <div class="content clinical">
+                <div class="flex"><h2>Quarentine & Isolation</h2><span class="material-icons" data-toggle="tooltip" data-placement="top" title="This is about quarentine and isolation!">info</span></div>
+                  <!--<div class="row">
+                    <div class="flex-box col-lg-6">
+                      <p class="number">45</p>
+                      <p class="title">Number in Quarantine</p>
+                    </div>
+                    <div class="flex-box col-lg-6">
+                      <p class="number">17</p>
+                      <p class="title">Number isolated presumed positive</p>
+                    </div>
+                  </div> -->
+                  <h4>Isolation Beds Capacity</h4>
+                  <img src="img/isolation-bed.png">
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col col-lg-12">
+              <div class="content daily-test">
+                <div class="flex space">
+                  <div class="flex">
+                    <h2>Test Results</h2><span class="material-icons" data-toggle="tooltip" data-placement="top" title="This is about test results!">info</span>
+                  </div>
+                </div>
+                <div class="labels">
+                  <div>
+                    <h5><span class="material-icons">brightness_1</span>Daily Tests</h5>
+                    <h5><span class="material-icons">brightness_1</span>Positive Tests</h5>
+                  </div>
+                  
+                </div>
+                
+                <img src="img/daily-test.png">
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    
+
+
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    
+    <!-- Optional JavaScript -->
+    <script>$(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+      });
+    </script>
+  </body>
+</html>

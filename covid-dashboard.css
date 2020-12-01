@@ -1,0 +1,168 @@
+.header{
+    margin-bottom: 10px;
+}
+
+.dashboard-container{
+    background-color: #F4F5F6;
+    padding: 80px;
+}
+
+.flex{
+    display: flex
+}
+
+.btn-secondary{
+    background-color: #304C89;
+    color: white;
+    border:none;
+    margin: 0px 15px;
+    padding: 8px 15px;
+    border-radius: 6px;
+}
+
+h1{
+    color:#0A1630;
+    font-family: 'IBM Plex Sans', sans-serif;
+}
+
+h2{
+    color:#F14437;
+    font-size: 18px;
+    margin-bottom: 15px;
+}
+
+h2.dark{
+    color:#0A1630;
+}
+
+h3{
+    font-size: 14px;
+    font-weight: 500;
+}
+
+h4{
+    color:#F14437;
+    font-size: 12px;
+}
+
+h5{
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.clinical h4{
+    color: #0A1630;
+}
+
+body{
+    font-family: 'IBM Plex Sans', sans-serif;
+}
+
+.content{
+    background: white;
+    padding: 30px;
+    border-radius: 7px;
+    margin-top: 30px;
+}
+
+p.number{
+    font-weight: 500;
+    font-size: 24px;
+    color: #304C89;
+    margin-bottom: 5px;
+}
+
+.clinical .row .flex-box{
+    text-align: center;
+}
+
+p{
+    font-size: 14px;
+}
+
+.material-icons{
+    font-size: 18px;
+    margin-left:6px;
+    color: #0b1730;
+}
+
+img{
+    width: 96%;
+}
+
+.saliva-img{
+    width: 47%;
+    margin-right: 25px;
+}
+
+.saliva .flex-box{
+    text-align: center;
+}
+
+.flex.saliva-test{
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.btn-interior{
+    font-size: 12px;
+    color: #304C89;
+    border: 1px solid #DFDFDF;
+    border-radius: 6px;
+}
+
+.wastewater img {
+    margin-top: 30px;
+}
+
+.labels h5{
+    display: flex;
+    align-items: center;
+}
+
+.labels .material-icons{
+    font-size:12px;
+    margin-right: 6px;
+}
+
+.wastewater .labels h5:nth-child(1) .material-icons{
+    color: #304C89;
+}
+
+.wastewater .labels h5:nth-child(2) .material-icons{
+    color: #F14437;
+}
+
+.label-flex{
+    display: flex;
+    justify-content: space-between;
+}
+
+.saliva-test .labels h5:nth-child(2) .material-icons{
+    color:#b1bac9;
+}
+
+.saliva-test .labels h5:nth-child(3) .material-icons{
+    color:#304C89;
+}
+
+.covid-threat p{
+    margin-bottom: 0px;
+}
+
+.covid-threat .material-icons{
+    color: #54b443;
+}
+
+.daily-test .flex.space{
+    justify-content: space-between;
+}
+
+.daily-test .labels h5:nth-child(1) .material-icons{
+    color:#B2B9C9;
+}
+
+.daily-test .labels h5:nth-child(2) .material-icons{
+    color:#304C89;
+}

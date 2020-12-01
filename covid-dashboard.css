@@ -187,3 +187,13 @@ img{
         padding-bottom: 41px;
     }
 }
+
+@media (max-width:768px){
+    .dashboard-container{
+        padding: 30px
+    }
+
+    .header{
+        padding: 30px;
+    }
+}

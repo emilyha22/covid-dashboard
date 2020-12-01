@@ -17,6 +17,10 @@ display: flex
     display: flex
 }
 
+.first.btn-secondary{
+margin: 0;
+}
+
 .btn-secondary{
     background-color: #304C89;
     color: white;
@@ -194,6 +198,6 @@ img{
     }
 
     .header{
-        padding: 30px;
+        padding: 15px;
     }
 }

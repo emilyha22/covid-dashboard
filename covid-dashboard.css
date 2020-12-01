@@ -1,5 +1,11 @@
 .header{
     margin-bottom: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.dropdown-div{
+display: flex
 }
 
 .dashboard-container{
@@ -165,4 +171,19 @@ img{
 
 .daily-test .labels h5:nth-child(2) .material-icons{
     color:#304C89;
+}
+
+.daily-test .labels{
+    display: flex;
+    justify-content: flex-end;
+}
+
+@media (max-width:1200px) and (min-width:991px){
+    .wastewater{
+        padding-bottom: 65px;
+    }
+
+    .daily-test{
+        padding-bottom: 41px;
+    }
 }

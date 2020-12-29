@@ -5,7 +5,7 @@ const parse = require('csv-parse')
 const admin = require('firebase-admin');
 admin.initializeApp();
 
-exports.importDataDump = functions.storage.object().onFinalize(async (file, context) => {
+exports.importDataDump = functions.storage.object().onFinalize((file, context) => {
 
     // Human readable ID for our import job
     const importID = Date();
@@ -23,14 +23,18 @@ exports.importDataDump = functions.storage.object().onFinalize(async (file, cont
     // Get the reference to the CSV file
     const fileRef = admin.storage().bucket().file(file.name);
 
-    // Read and parse the CSV stream
+    //  Storage for all of the "write" promises.
+    let writes = [];
+
+    /**
+     * Read and parse the CSV stream
+     * 
+     * @url https://csv.js.org/parse/api/stream/
+     */
     const parser = fileRef.createReadStream().pipe(parse({
         columns: true,
         trim: true
     }));
-
-    //  Storage for all of the "write" promises.
-    let writes = [];
 
     // Iterate over each record/row in the CSV
     parser.on('readable', function(){
@@ -66,6 +70,7 @@ exports.importDataDump = functions.storage.object().onFinalize(async (file, cont
                 collectionID: importID
             })
             functions.logger.log(`${writes.length} samples were imported.`);
+            console.log(`${writes.length} samples were imported.`);
         }).catch(error => {
             // Fahhk - something went wrong
             functions.logger.log(error);

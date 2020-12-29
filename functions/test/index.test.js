@@ -19,18 +19,18 @@ const myFunctions = require('../index.js');
 const wrapped = test.wrap(myFunctions.importDataDump);
 
 
-// const stubConsole = function () {
-//   sinon.stub(console, 'error');
-//   sinon.stub(console, 'log');
-// };
+const stubConsole = function () {
+  sinon.stub(console, 'error');
+  sinon.stub(console, 'log');
+};
 
-// const restoreConsole = function () {
-//   console.log.restore();
-//   console.error.restore();
-// };
+const restoreConsole = function () {
+  console.log.restore();
+  console.error.restore();
+};
 
-// beforeEach(stubConsole);
-// afterEach(restoreConsole);
+beforeEach(stubConsole);
+afterEach(restoreConsole);
 
 /**
  * Fetchs the deets for our test file
@@ -43,9 +43,12 @@ before(async () => {
 });
 
 
-it('importDataDump: should print out event', async () => {
+it('importDataDump: should import records successfully', () => {
 
     // Call tested function and verify its behavior
-    wrapped(metaData);
-    // assert.ok(console.log.calledWith(`  Event Type: google.storage.object.finalize`));
+    wrapped(metaData).then(()=> {
+      assert.ok(console.log.calledWith('samples were imported'));
+    });
+
+
 });

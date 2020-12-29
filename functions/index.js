@@ -11,7 +11,7 @@ exports.importDataDump = functions.storage.object().onFinalize((file, context) =
     const importID = Date();
 
     // Root Collection for all sample imports
-    const rootCollection = 'samples';
+    const rootCollection = process.env.NODE_ENV == 'production' ? 'samples' : 'samplesUnitTests';
     const rootCollectionRef = admin.firestore().collection(rootCollection);
 
     // The collection for the current import

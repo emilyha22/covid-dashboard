@@ -43,12 +43,19 @@ before(async () => {
 });
 
 
-it('importDataDump: should import records successfully', () => {
+describe('importDataDump', function(){
+  
+  // Since we're online, kill the timeout for this test
+  this.timeout(0);
+
+  it('should import sample records successfully', async () => {
 
     // Call tested function and verify its behavior
-    wrapped(metaData).then(()=> {
-      assert.ok(console.log.calledWith('samples were imported'));
+    return wrapped(metaData).then( (response) => {
+      assert.strictEqual(console.log.calledWith('Samples were imported'), true, "Samples were not imported");
     });
+      
+  });
 
+})
 
-});

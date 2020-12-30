@@ -5,7 +5,7 @@ const parse = require('csv-parse')
 const admin = require('firebase-admin');
 admin.initializeApp();
 
-exports.importDataDump = functions.storage.object().onFinalize((file, context) => {
+exports.importDataDump = functions.storage.object().onFinalize( async (file, context) => {
 
     // Human readable ID for our import job
     const importID = Date();
@@ -23,6 +23,9 @@ exports.importDataDump = functions.storage.object().onFinalize((file, context) =
     // Get the reference to the CSV file
     const fileRef = admin.storage().bucket().file(file.name);
 
+    // Most recent collection date
+    let mostRecentCollectionDate = "";
+
     //  Storage for all of the "write" promises.
     let writes = [];
 
@@ -36,45 +39,50 @@ exports.importDataDump = functions.storage.object().onFinalize((file, context) =
         trim: true
     }));
 
+
+
     // Iterate over each record/row in the CSV
-    parser.on('readable', function(){
-        while (record = parser.read()) {
-           
-            // use empty column name as "id"
-            let id = record[''];
-            delete record[''];
-  
+    for await (const record of parser) {
+        
+        // use empty column name as "id"
+        let id = record[''];
+        delete record[''];
 
-            /**
-             * I would batch these, but there's a limit of
-             * 500 records, so we'd have to split everything into
-             * separate batches. Future me.
-             * 
-             * @todo Split writes into batches
-             */
-            writes.push(collectionRef.doc(id).set(record));          
+        if (record.date.replace('-', '') > mostRecentCollectionDate.replace('-', '') && record.date !== 'NA'){
+            mostRecentCollectionDate = record.date;
         }
+
+        /**
+         * I would batch these, but there's a limit of
+         * 500 records, so we'd have to split everything into
+         * separate batches. Future me.
+         * 
+         * @todo Split writes into batches
+         */
+        writes.push(collectionRef.doc(id).set(record));     
+        
+        //  Use for testing without writing to firestore (comment previous line)
+        // writes.push( 
+        //     new Promise((resolve, reject) => {
+        //         setTimeout(resolve, 10000, 'foo');
+        //     }) 
+        // );          
+    }
+    
+    // Handle the success or failure of our writes
+    return Promise.all(writes).then( async (values) => {
+        /**
+         * Success! Update the reference to the current data set
+         * so everyone can find it among our collections
+         */ 
+        await currentSampleSetDoc.update({
+            "collectionID": importID,
+            "mostRecentCollectionDate": mostRecentCollectionDate
+        })
+        functions.logger.log(`${writes.length} samples were imported.`);
+        console.log("Samples were imported");
+    }).catch(error => {
+        // Fahhk - something went wrong
+        functions.logger.log(error);
     });
-
-    /**
-     * Now we find out if all of the writes were successful.
-     * If they aren't, we don't update the pointer to our import.
-     */
-    parser.on('end', function(){
-        Promise.all(writes).then( async (values) => {
-            /**
-             * Success! Update the reference to the current data set
-             * so everyone can find it among our collections
-             */ 
-            await currentSampleSetDoc.update({
-                collectionID: importID
-            })
-            functions.logger.log(`${writes.length} samples were imported.`);
-            console.log(`${writes.length} samples were imported.`);
-        }).catch(error => {
-            // Fahhk - something went wrong
-            functions.logger.log(error);
-        });     
-    })    
-
 });

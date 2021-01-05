@@ -1,0 +1,25 @@
+{
+  "name": "covid-dashboard",
+  "version": "1.0.0",
+  "description": "covid-dashboard",
+  "main": "covid-dashboard.js",
+  "workspaces": [
+    "functions"
+  ],
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/uconndxlab/covid-dashboard.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/uconndxlab/covid-dashboard/issues"
+  },
+  "homepage": "https://github.com/uconndxlab/covid-dashboard#readme",
+  "dependencies": {
+    "firebase": "^8.1.2"
+  }
+}

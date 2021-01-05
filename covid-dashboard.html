@@ -15,40 +15,34 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="covid-dashboard.css">
-    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <title>Covid Dashboard</title>
   </head>
   <body>
-    <section id="app" class="container dashboard-container">
+    <section class="container dashboard-container">
       <div class="flex-center row header">
-        <h1>Wastewater Testing Results</h1>
+        <h1>Covid Surveillance Dashboard</h1>
         <div class="dropdown-div">
           <div class="dropdown">
-            
-            <!-- <button class="btn first btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Northeast Quad</button>
+            <button class="btn first btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Northeast Quad</button>
             <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
               <a class="dropdown-item" href="#">Southwest Quad</a>
               <a class="dropdown-item" href="#">North Quad</a>
               <a class="dropdown-item" href="#">East Quad</a>
-            </div> -->
-          </div>
-          <!-- <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" 
-            aria-haspopup="true" aria-expanded="false">{{activeCollectionDate}}</button>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-              <a class="dropdown-item" v-for = "date in collectionDates" href="#">{{date}}</a>
             </div>
-            
-          </div> -->
-          
+          </div>
+          <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Today</button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              <a class="dropdown-item" href="#">Change Date</a>
+            </div>
+          </div>
         </div>
         
       </div>
 
       <div class="row">
-        <div class="col col-lg-12">
-          <!-- <div class="row">
+        <div class="col col-lg-8">
+          <div class="row">
             <div class="col col-lg-12"> 
               <div class="content clinical">
                 <div class="row">
@@ -82,30 +76,29 @@
 
               </div>
             </div> 
-          </div> -->
+          </div>
           <div class="row">
-            <div class="col col-lg-12">
+            <div class="col col-lg-6">
               <div class="content wastewater">
-                <div class="flex"><h2>{{currentLocation}}</h2><span class="material-icons" data-toggle="tooltip" data-placement="top" 
-                  title="Showing data for a 7-day span">info</span></div>
+                <div class="flex"><h2>Wastewater Testing</h2><span class="material-icons" data-toggle="tooltip" data-placement="top" title="This is about wastewater testing!">info</span></div>
                 <div class="label-flex">
                   <div class="dropdown heading">
-                    <button class="btn btn-interior dropdown-toggle" type="button" id="dropdownMenuButton" 
-                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{currentLocation}}</button>
+                    <button class="btn btn-interior dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Region #1</button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                      <a class="dropdown-item" v-for = "location in collectionLocations" @click="updateLocation(location)" href="#">{{location}}</a>
+                      <a class="dropdown-item" href="#">Region #2</a>
+                      <a class="dropdown-item" href="#">Region #3</a>
+                      <a class="dropdown-item" href="#">Region #4</a>
                     </div>
                   </div>
                   <div class="labels">
-                    <h5><span class="material-icons">brightness_1</span>E Value</h5>
-                    <h5><span class="material-icons">brightness_1</span>N1 Value</h5>
+                    <h5><span class="material-icons">brightness_1</span>Last Result</h5>
+                    <h5><span class="material-icons">brightness_1</span>Baseline</h5>
                   </div>
                 </div>
-                <div id="curve_chart" ></div>
-                <h4>Data current as of {{currentSampleSet}}</h4>
+                <img src="img/wastewater-graph.png">
               </div>
             </div>
-            <!-- <div class="col col-lg-6">
+            <div class="col col-lg-6">
               <div class="content saliva">
                 <div class="flex"><h2>Saliva Testing</h2><span class="material-icons" data-toggle="tooltip" data-placement="top" title="This is about saliva testing!">info</span></div>
                   <div class="row">
@@ -133,12 +126,11 @@
                   </div>
                 
               </div>
-            </div> -->
-            
+            </div>
           </div>
         </div>
 
-        <!-- <div class="col col-lg-4">
+        <div class="col col-lg-4">
           <div class="row">
             <div class="col col-lg-12">
               <div class="content covid-threat">
@@ -151,8 +143,8 @@
           <div class="row">
             <div class="col col-lg-12">
               <div class="content clinical">
-                 <div class="flex"><h2>Quarantine & Isolation</h2><span class="material-icons" data-toggle="tooltip" data-placement="top" title="This is about quarantine and isolation!">info</span></div>
-                  <div class="row">
+                <div class="flex"><h2>Quarentine & Isolation</h2><span class="material-icons" data-toggle="tooltip" data-placement="top" title="This is about quarentine and isolation!">info</span></div>
+                  <!--<div class="row">
                     <div class="flex-box col-lg-6">
                       <p class="number">45</p>
                       <p class="title">Number in Quarantine</p>
@@ -161,9 +153,9 @@
                       <p class="number">17</p>
                       <p class="title">Number isolated presumed positive</p>
                     </div>
-                  </div> 
+                  </div> -->
                   <h4>Isolation Beds Capacity</h4>
-                  <img src="img/isolation-bed.png"> 
+                  <img src="img/isolation-bed.png">
               </div>
             </div>
           </div>
@@ -187,8 +179,7 @@
               </div>
             </div>
           </div>
-        </div> -->
-        
+        </div>
       </div>
     </section>
 
@@ -204,241 +195,6 @@
     <script>$(document).ready(function(){
         $('[data-toggle="tooltip"]').tooltip();
       });
-    </script>
-
-    <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-firestore.js"></script>
-
-
-<script>
-  // Your web app's Firebase configuration
-  var firebaseConfig = {
-    apiKey: "AIzaSyAdC_F6vZblWqDKwwsN-GZUU9FpsTetFZA",
-    authDomain: "covid-dashboard-f47ce.firebaseapp.com",
-    projectId: "covid-dashboard-f47ce",
-    storageBucket: "covid-dashboard-f47ce.appspot.com",
-    messagingSenderId: "401683634457",
-    appId: "1:401683634457:web:291628b8920661f2ec8d88"
-  };
-
-</script>
-
-    <script>
-
-      var app = new Vue({
-        el: '#app',
-        data: {
-          pageHeader: 'Wastewater Testing @ UConn',
-          currentSampleSet:"",
-          allData:{},
-          content: [
-            
-
-          ],
-          collectionDates: Array,
-          collectionLocations:[
-          "WOOD",
-          "HILL",
-          "ALUM",
-          "WWTP",
-          "CHOK",
-          "MANS",
-          "TW",
-          "SUB",
-          "SO",
-          "HV",
-          "STRC",
-          "NW",
-          "GARG",
-          "NO"
-          ].sort(),
-          activeCollectionDate:String,
-          currentLocation: "SUB"
-        },
-        mounted() {
-          firebase.initializeApp(firebaseConfig);
-
-          this.getSampleSet();
-        },
-        
-
-
-
-        methods: {
-          prepChart() {
-            this.content = [];
-            let that = this;
-            google.charts.load('current', {'packages':['line','corechart']});
-
-            
-            let samples = that.allData;
-             
-            
-            
-            
-            var samplesMap = Object.keys(samples);
-            
-            for (var i = 0; i < 7; i++) {
-                var sample = samples[samplesMap[i]];
-                
-                console.log(sample);
-
-                preppedSample = [sample.date, +sample.ePMMoV || 0, +sample.n1PMMoV || 0];
-                this.content.unshift(preppedSample);
-            }
-            
-            google.charts.setOnLoadCallback(this.drawChart);
-          },
-
-          updateLocation(loc) {
-            this.currentLocation = loc;
-            this.getSampleSet();
-          },
-
-          drawChart() {
-            let that = this;
-            this.content.unshift(['Date', 'E', 'N1']);
-
-            var data = google.visualization.arrayToDataTable(that.content);
-    
-            var NumberFormat = new google.visualization.NumberFormat(
-            //You can explore various type of patterns in Documentation
-            {pattern:'##.############'}
-            );
-            
-            NumberFormat.format(data, 1);
-            NumberFormat.format(data, 2);
-            
-
-            var options = {
-              legend: { position: 'bottom' },
-              vAxis: {
-                title: 'Detectable SARS-CoV2',
-                scaleType: 'log'
-              }
-            };
-
-            var chart = new google.visualization.LineChart(document.getElementById('curve_chart'));
-
-            chart.draw(data, options);
-          },
-
-          getSampleSet() {
-            let that = this;
-            // Initialize Firebase
-              var db = firebase.firestore()
-              var docRef = db.collection("samples").doc("currentSampleSet");
-              var mostRecentCollectionDate = "";
-              var content = [];
-              var dates = [];
-              var locations = [];
-
-              var collectionDates = {};
-
-              docRef.get().then(function(doc) {
-                  if (doc.exists) {
-                      console.log("Current Sample Set Collection ID:", doc.data());
-                      that.currentSampleSet = doc.data().collectionID;
-                      mostRecentCollectionDate = doc.data().mostRecentCollectionDate;
-                      
-                      // now go into that sample
-                      contentRef = db.collection("samples").doc("imported").collection(that.currentSampleSet);
-                        contentRef
-                        //.where("location", "==", that.currentLocation)
-                        .orderBy("date", "desc")
-                        .get().then(function(querySnapshot) {
-                          
-                          querySnapshot.forEach(function(doc) {
-                             data = doc.data();
-
-                             if(data.location == that.currentLocation) {
-                              if(dates.indexOf(data.date) == -1) {
-                                collectionDates[data.date] = [];
-                                dates.unshift(data.date);
-                                collectionDates[data.date].date = data.date;
-                                collectionDates[data.date].ePMMoV = "NA"
-                                collectionDates[data.date].n1PMMoV = "NA"
-                              }
-
-                              collectionDates[data.date][data.Target] = data.Relative;
-                             }
-                          });
-
-                          
-                          that.allData = collectionDates;
-                          that.prepChart();
-                          
-                        });
-                      
-                      
-                  } else {
-                      // doc.data() will be undefined in this case
-                      console.log("No such document!");
-                  }
-              }).catch(function(error) {
-                  console.log("Error getting document:", error);
-              });
-
-          }, 
-
-          prepareData(data) {
-
-            var locMap = {};
-
-            
-
-            // prep the location map with a bunch of empty arrays
-            let that = this;
-            for (var i = 0; i < that.collectionLocations.length; i++) {
-              locMap[that.collectionLocations[i]] = {
-                samples:[]
-              }
-
-              for (var ii = 0; ii < that.collectionDates.length; ii++) {
-                var date = that.collectionDates[ii];
-                locMap[that.collectionLocations[i]].samples[date] =  [];
-                locMap[that.collectionLocations[i]].samples[date]['date'] =  "";
-                locMap[that.collectionLocations[i]].samples[date]['ePMMoV'] = "NA";
-                locMap[that.collectionLocations[i]].samples[date]['n1PMMoV'] = "NA";
-              }
-            }
-
-            
-            
-            for(var i=0; i < data.length; i++) {
-              //put each sample in the right array for the location
-              /**
-              *         location
-                          samples [date]
-                            eppmov
-                            n1ppmov
-              *
-              *
-              */
-              var sample = data[i];
-
-              
-
-              
-                locMap[sample['location']].samples[sample['date']]['date'] = sample.date;
-                locMap[sample['location']].samples[sample['date']][sample.Target] = sample.Relative;
-              
-
-
-
-
-            }
-
-            that.allData = locMap;
-
-            that.prepChart();
-
-            
-            
-          }
-        }
-      })
-
     </script>
   </body>
 </html>

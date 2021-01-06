@@ -42,8 +42,8 @@
                     </div>
                   </div>
                   <div class="labels">
-                    <h5><span class="material-icons">brightness_1</span>E Value</h5>
                     <h5><span class="material-icons">brightness_1</span>N1 Value</h5>
+                    <h5><span class="material-icons">brightness_1</span>E Value</h5>
                   </div>
                 </div>
                 <div id="curve_chart" ></div>
@@ -116,7 +116,7 @@
           "NO"
           ].sort(),
           activeCollectionDate:String,
-          currentLocation: "SUB"
+          currentLocation: "WWTP"
         },
         mounted() {
           firebase.initializeApp(firebaseConfig);
@@ -146,7 +146,7 @@
                 
                 console.log(sample);
 
-                preppedSample = [sample.date, +sample.ePMMoV || 0, +sample.n1PMMoV || 0];
+                preppedSample = [sample.date, +sample.n1PMMoV || 0, +sample.ePMMoV || 0];
                 this.content.unshift(preppedSample);
             }
             
@@ -160,7 +160,7 @@
 
           drawChart() {
             let that = this;
-            this.content.unshift(['Date', 'E', 'N1']);
+            this.content.unshift(['Date', 'N1', 'E']);
 
             var data = google.visualization.arrayToDataTable(that.content);
     
@@ -174,7 +174,7 @@
             
 
             var options = {
-              legend: { position: 'bottom' },
+              legend: { position: 'right' },
               vAxis: {
                 title: 'Detectable SARS-CoV2',
                 scaleType: 'log'

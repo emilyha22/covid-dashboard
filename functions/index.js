@@ -24,7 +24,11 @@ admin.initializeApp();
 //              "GRAD" = "Isolation Dorm"
 // ]
 
-
+/**
+ * TODO: Validate post source is GitHub
+ * TODO: Handle Mappings
+ * TODO: Unit Tests
+ */
 exports.importWastewaterData = functions.https.onRequest( async (req, res) => {
 
     if(req.method !== 'POST') return res.status(403).send("Forbidden");
@@ -89,7 +93,7 @@ exports.importWastewaterData = functions.https.onRequest( async (req, res) => {
          * 500 records, so we'd have to split everything into
          * separate batches. Future me.
          * 
-         * @todo Split writes into batches
+         * TODO:  Split writes into batches
          */
         writes.push(collectionRef.doc(id).set(record));     
         

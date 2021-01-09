@@ -1,11 +1,41 @@
+require('dotenv').config()
 const functions = require('firebase-functions');
-const parse = require('csv-parse')
-
+const parse = require('csv-parse');
+const got = require('got');
 
 const admin = require('firebase-admin');
 admin.initializeApp();
 
-exports.importDataDump = functions.storage.object().onFinalize( async (file, context) => {
+// const mappings = [
+//     "HV" = "Quarantine Dorm",
+//              "NO" = "Dorm Complex",
+//              "NW" = "Dorm Complex",
+//              "SUB" = "Student Union",
+//              "TW" = "Dorm Complex",
+//              "WWTP" = "Wastewater Treatment Plant",
+//              "MANS" = "Isolation Dorm",
+//              "SO" = "Dorm Complex",
+//              "WOOD" = "Library and Central campus",
+//              "STRC" = "Dorm Complex",
+//              "GARG" = "Apartment Complex",
+//              "CHOK" = "Apartment Complex",
+//              "ALUM" = "Apartment Complex",
+//              "HILL" = "Apartment Complex",
+//              "GRAD" = "Isolation Dorm"
+// ]
+
+
+exports.importWastewaterData = functions.https.onRequest( async (req, res) => {
+
+    // Build our URL
+    let csv = [
+        'https://',
+        process.env.GITHUB_USER,
+        ':',
+        process.env.GITHUB_TOKEN,
+        '@',
+        process.env.RAW_WASTEWATER_URL
+    ].join('');
 
     // Human readable ID for our import job
     const importID = Date();
@@ -20,9 +50,6 @@ exports.importDataDump = functions.storage.object().onFinalize( async (file, con
     // Where we reference the current sample set. Serves as a pointer later on.
     const currentSampleSetDoc = rootCollectionRef.doc('currentSampleSet');
 
-    // Get the reference to the CSV file
-    const fileRef = admin.storage().bucket().file(file.name);
-
     // Most recent collection date
     let mostRecentCollectionDate = "";
 
@@ -34,12 +61,10 @@ exports.importDataDump = functions.storage.object().onFinalize( async (file, con
      * 
      * @url https://csv.js.org/parse/api/stream/
      */
-    const parser = fileRef.createReadStream().pipe(parse({
+    let parser = got(csv, { isStream: true }).pipe(parse({
         columns: true,
-        trim: true
+        trim: true       
     }));
-
-
 
     // Iterate over each record/row in the CSV
     for await (const record of parser) {
@@ -80,9 +105,10 @@ exports.importDataDump = functions.storage.object().onFinalize( async (file, con
             "mostRecentCollectionDate": mostRecentCollectionDate
         })
         functions.logger.log(`${writes.length} samples were imported.`);
-        console.log("Samples were imported");
+        res.send("Samples were imported");
     }).catch(error => {
         // Fahhk - something went wrong
         functions.logger.log(error);
+        res.send("Samples were not imported");
     });
 });

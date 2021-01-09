@@ -27,7 +27,14 @@ admin.initializeApp();
 
 exports.importWastewaterData = functions.https.onRequest( async (req, res) => {
 
-    // Build our URL
+    if(req.method !== 'POST') return res.status(403).send("Forbidden");
+
+    /**
+     * Build the URL
+     * 
+     * Prod ENV edits:
+     * @url https://console.cloud.google.com/functions/edit/us-central1/importWastewaterData?authuser=1&project=covid-dashboard-f47ce
+     */
     let csv = [
         'https://',
         process.env.GITHUB_USER,

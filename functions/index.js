@@ -6,27 +6,25 @@ const got = require('got');
 const admin = require('firebase-admin');
 admin.initializeApp();
 
-// const mappings = [
-//     "HV" = "Quarantine Dorm",
-//              "NO" = "Dorm Complex",
-//              "NW" = "Dorm Complex",
-//              "SUB" = "Student Union",
-//              "TW" = "Dorm Complex",
-//              "WWTP" = "Wastewater Treatment Plant",
-//              "MANS" = "Isolation Dorm",
-//              "SO" = "Dorm Complex",
-//              "WOOD" = "Library and Central campus",
-//              "STRC" = "Dorm Complex",
-//              "GARG" = "Apartment Complex",
-//              "CHOK" = "Apartment Complex",
-//              "ALUM" = "Apartment Complex",
-//              "HILL" = "Apartment Complex",
-//              "GRAD" = "Isolation Dorm"
-// ]
+const mappings = {
+    "HV"    : "QuarantineDorm",
+    "NO"    : "DormComplex1",
+    "NW"    : "DormComplex2",
+    "SUB"   : "StudentUnion",
+    "TW"    : "DormComplex3",
+    "WWTP"  : "WastewaterTreatmentPlant",
+    "MANS"  : "IsolationDorm1",
+    "SO"    : "DormComplex4",
+    "WOOD"  : "LibraryandCentralCampus",
+    "STRC"  : "DormComplex5",
+    "GARG"  : "ApartmentComplex1",
+    "CHOK"  : "ApartmentComplex2",
+    "ALUM"  : "ApartmentComplex3",
+    "HILL"  : "ApartmentComplex4",
+    "GRAD"  : "IsolationDorm2"
+}
 
 /**
- * TODO: Validate post source is GitHub
- * TODO: Handle Mappings
  * TODO: Unit Tests
  */
 exports.importWastewaterData = functions.https.onRequest( async (req, res) => {
@@ -83,6 +81,9 @@ exports.importWastewaterData = functions.https.onRequest( async (req, res) => {
         // use empty column name as "id"
         let id = record[''];
         delete record[''];
+
+        // Rename locations
+        record['location'] = mappings[record['location']];
 
         if (record.date.replace('-', '') > mostRecentCollectionDate.replace('-', '') && record.date !== 'NA'){
             mostRecentCollectionDate = record.date;

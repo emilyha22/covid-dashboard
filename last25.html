@@ -32,7 +32,7 @@
             <div class="col col-lg-12">
               <div class="content wastewater">
                 <div class="flex"><h2>{{currentLocation}}</h2><span class="material-icons" data-toggle="tooltip" data-placement="top" 
-                  title="Showing data for a 7-day span">info</span></div>
+                  title="Showing the last 25 collection dates for each location.">info</span></div>
                 <div class="label-flex">
                   <div class="dropdown heading">
                     <button class="btn btn-interior dropdown-toggle" type="button" id="dropdownMenuButton" 
@@ -100,23 +100,24 @@
           ],
           collectionDates: Array,
           collectionLocations:[
-          "WOOD",
-          "HILL",
-          "ALUM",
-          "WWTP",
-          "CHOK",
-          "MANS",
-          "TW",
-          "SUB",
-          "SO",
-          "HV",
-          "STRC",
-          "NW",
-          "GARG",
-          "NO"
+          "QuarantineDorm",
+          "DormComplex1",
+          "DormComplex2",
+          "StudentUnion",
+          "DormComplex3",
+          "WastewaterTreatmentPlant",
+          "IsolationDorm1",
+          "DormComplex4",
+          "LibraryandCentralCampus",
+          "DormComplex5",
+          "ApartmentComplex1",
+          "ApartmentComplex2",
+          "ApartmentComplex3",
+          "ApartmentComplex4",
+          "IsolationDorm2"
           ].sort(),
           activeCollectionDate:String,
-          currentLocation: "WWTP"
+          currentLocation: "WastewaterTreatmentPlant"
         },
         mounted() {
           firebase.initializeApp(firebaseConfig);

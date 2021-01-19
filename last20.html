@@ -21,17 +21,17 @@
   </head>
   <body>
     <section id="app" class="container-fluid dashboard-container">
-      <div>
-        <h2>Wastewater Testing Results</h2>
+      <!-- <div>
+        <h2>Location-specific Wastewater Testing Results</h2>
         <p>UConn is pioneering a research method that allows us to regularly test waste water around campus to make
           an early determination on the presence of COVID-19. We are using two different measurements for COVID-19 in wastewater: 
-          E and N1 genes. We monitor 2 genes to increase the odds that we will be able to detect
+          E and N1 genes. We monitor two genes to increase the odds that we will be able to detect
           SARS-CoV2 even if there are strains that have mutated a mismatch of our probes. The graph below is a
-          visual representation of the two different measurements we are using to test for COVID 19 in wastewater.</p>
+          visual representation of the two different measurements we are using to test for COVID-19 in wastewater.</p>
 
           <p>The X Axis of the chart below shows wastewater <strong>collection dates</strong> for the selected location.</p>
           <p>The Y Axis of the chart below shows the detectable E and N1 genes for each wastewater collection date.</p>
-      </div>
+      </div> -->
 
       <div class="row">
         <div class="col col-lg-12">
@@ -40,6 +40,7 @@
               <div class="content wastewater">
                 <div class="label-flex">
                   <div class="dropdown heading">
+                    Location:
                     <button class="btn btn-interior dropdown-toggle" type="button" id="dropdownMenuButton" 
                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{currentLocation}}</button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
@@ -51,9 +52,6 @@
                     <h5><span class="material-icons">brightness_1</span>E Value</h5>
                   </div> -->
                 </div>
-                <br> 
-                <div class="flex"><h3>{{currentLocation}}</h3><span class="material-icons" data-toggle="tooltip" data-placement="top" 
-                  title="Showing the last 20 collection dates for each location.">info</span></div>
                 <div id="curve_chart" ></div>
                 
               </div>
@@ -162,7 +160,7 @@
                 // console.log("usable date:" + usableDate);
                 // console.log("sample date:" + sample.date);
 
-                preppedSample = [new Date(sample.date + " 00:00"), +sample.n1PMMoV || 0, +sample.ePMMoV || 0];
+                preppedSample = [new Date(sample.date + "T00:00:00"), +sample.n1PMMoV || 0, +sample.ePMMoV || 0];
                 this.content.unshift(preppedSample);
             }
             

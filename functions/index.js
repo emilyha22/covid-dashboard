@@ -1,11 +1,50 @@
+require('dotenv').config()
 const functions = require('firebase-functions');
-const parse = require('csv-parse')
-
+const parse = require('csv-parse');
+const got = require('got');
 
 const admin = require('firebase-admin');
 admin.initializeApp();
 
-exports.importDataDump = functions.storage.object().onFinalize( async (file, context) => {
+const mappings = {
+    "HV"    : "QuarantineDorm",
+    "NO"    : "DormComplex1",
+    "NW"    : "DormComplex2",
+    "SUB"   : "StudentUnion",
+    "TW"    : "DormComplex3",
+    "WWTP"  : "WastewaterTreatmentPlant",
+    "MANS"  : "IsolationDorm1",
+    "SO"    : "DormComplex4",
+    "WOOD"  : "LibraryandCentralCampus",
+    "STRC"  : "DormComplex5",
+    "GARG"  : "ApartmentComplex1",
+    "CHOK"  : "ApartmentComplex2",
+    "ALUM"  : "ApartmentComplex3",
+    "HILL"  : "ApartmentComplex4",
+    "GRAD"  : "IsolationDorm2"
+}
+
+/**
+ * TODO: Unit Tests
+ */
+exports.importWastewaterData = functions.https.onRequest( async (req, res) => {
+
+    if(req.method !== 'POST') return res.status(403).send("Forbidden");
+
+    /**
+     * Build the URL
+     * 
+     * Prod ENV edits:
+     * @url https://console.cloud.google.com/functions/edit/us-central1/importWastewaterData?authuser=1&project=covid-dashboard-f47ce
+     */
+    let csv = [
+        'https://',
+        process.env.GITHUB_USER,
+        ':',
+        process.env.GITHUB_TOKEN,
+        '@',
+        process.env.RAW_WASTEWATER_URL
+    ].join('');
 
     // Human readable ID for our import job
     const importID = Date();
@@ -20,9 +59,6 @@ exports.importDataDump = functions.storage.object().onFinalize( async (file, con
     // Where we reference the current sample set. Serves as a pointer later on.
     const currentSampleSetDoc = rootCollectionRef.doc('currentSampleSet');
 
-    // Get the reference to the CSV file
-    const fileRef = admin.storage().bucket().file(file.name);
-
     // Most recent collection date
     let mostRecentCollectionDate = "";
 
@@ -34,12 +70,10 @@ exports.importDataDump = functions.storage.object().onFinalize( async (file, con
      * 
      * @url https://csv.js.org/parse/api/stream/
      */
-    const parser = fileRef.createReadStream().pipe(parse({
+    let parser = got(csv, { isStream: true }).pipe(parse({
         columns: true,
-        trim: true
+        trim: true       
     }));
-
-
 
     // Iterate over each record/row in the CSV
     for await (const record of parser) {
@@ -47,6 +81,9 @@ exports.importDataDump = functions.storage.object().onFinalize( async (file, con
         // use empty column name as "id"
         let id = record[''];
         delete record[''];
+
+        // Rename locations
+        record['location'] = mappings[record['location']];
 
         if (record.date.replace('-', '') > mostRecentCollectionDate.replace('-', '') && record.date !== 'NA'){
             mostRecentCollectionDate = record.date;
@@ -57,7 +94,7 @@ exports.importDataDump = functions.storage.object().onFinalize( async (file, con
          * 500 records, so we'd have to split everything into
          * separate batches. Future me.
          * 
-         * @todo Split writes into batches
+         * TODO:  Split writes into batches
          */
         writes.push(collectionRef.doc(id).set(record));     
         
@@ -80,9 +117,10 @@ exports.importDataDump = functions.storage.object().onFinalize( async (file, con
             "mostRecentCollectionDate": mostRecentCollectionDate
         })
         functions.logger.log(`${writes.length} samples were imported.`);
-        console.log("Samples were imported");
+        res.send("Samples were imported");
     }).catch(error => {
         // Fahhk - something went wrong
         functions.logger.log(error);
+        res.send("Samples were not imported");
     });
 });

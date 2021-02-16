@@ -1,61 +1,42 @@
-const admin = require('firebase-admin');
-const assert = require('assert');
-const uuid = require('uuid');
-const sinon = require('sinon');
+require('dotenv').config()
+const chai = require('chai');
+const { expect, assert, should } = chai;
+
 
 /**
- * We're gonna run these in online mode. Mostly because
- * we can't emulate the firebase storage service locally.
- * @url https://firebase.google.com/docs/functions/unit-testing#online-mode
- */ 
-const test = require('firebase-functions-test')({
-  databaseURL: 'https://covid-dashboard-f47ce.firebaseapp.com',
-  storageBucket: 'covid-dashboard-f47ce.appspot.com',
-  projectId: 'covid-dashboard-f47ce',
-}, 'test/serviceAccountKey.json');
-
-// Import functions for testing
-const myFunctions = require('../index.js');
-const wrapped = test.wrap(myFunctions.importDataDump);
-
-
-const stubConsole = function () {
-  sinon.stub(console, 'error');
-  sinon.stub(console, 'log');
-};
-
-const restoreConsole = function () {
-  console.log.restore();
-  console.error.restore();
-};
-
-beforeEach(stubConsole);
-afterEach(restoreConsole);
-
-/**
- * Fetchs the deets for our test file
- * @url https://firebase.google.com/docs/storage/admin/start#use_a_default_bucket
+ * Using Chai HTTP
+ * @url https://www.chaijs.com/plugins/chai-http/
  */
-let metaData = {};
-before(async () => {
-    const bucket = admin.storage().bucket();
-    [metaData] = await bucket.file("test/unit-test-file-do-not-delete-me.csv").getMetadata();
-});
+const chaiHttp = require('chai-http');
+chai.use(chaiHttp);
 
 
-describe('importDataDump', function(){
+describe('Endpoint: importWastewaterData', function(){
+
+  const server = 'http://localhost:5001';
+  const endpoint = '/covid-dashboard-f47ce/us-central1/importWastewaterData'
   
   // Since we're online, kill the timeout for this test
   this.timeout(0);
 
-  it('should import sample records successfully', async () => {
-
-    // Call tested function and verify its behavior
-    return wrapped(metaData).then( (response) => {
-      assert.strictEqual(console.log.calledWith('Samples were imported'), true, "Samples were not imported");
+  it('should import sample records successfully', (done) => {
+    chai.request(server)
+    .post(endpoint)
+    .end(function (err, res) {
+        expect(err).to.be.null;
+        expect(res).to.have.status(200);
+        assert(res.text === 'Samples were imported successfully.', 'Response text does not match')
+        done();
     });
-      
   });
 
-})
-
+  it('should reject any non-POST request', (done) => {
+    chai.request(server)
+    .get(endpoint)
+    .end(function (err, res) {
+        expect(err).to.be.null;
+        expect(res).to.have.status(403);
+        done();
+    });
+  });
+});

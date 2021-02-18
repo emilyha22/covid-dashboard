@@ -20,7 +20,7 @@ const bucket = admin.storage().bucket();
  */
 const csvImports = [
     {
-        id: 'imported',
+        id: 'storrs',
         description: 'This holds the Storrs campus data',
         url: `https://${process.env.GITHUB_USER}:${process.env.GITHUB_TOKEN}@${process.env.RAW_WASTEWATER_URL}`,
         ref: 'samples/storrs.csv'
@@ -52,12 +52,10 @@ const mappings = {
     "GRAD"  : "IsolationDorm2"
 }
 
-
 exports.importWastewaterData = functions.https.onRequest( async (req, res) => {
 
     // Only accept post requests
     if(req.method !== 'POST') return res.status(403).send("Forbidden");
-
 
     let saveStatus = new Promise( (resolve, reject) => {
         csvImports.forEach( (csv, index, arr) => {
@@ -86,89 +84,76 @@ exports.importWastewaterData = functions.https.onRequest( async (req, res) => {
     }).catch( error => {
         return res.status(404).send(error);
     });
+});
 
 
+/**
+ * Using Express for the new endpoint
+ * @url https://firebase.google.com/docs/functions/http-events#using_existing_express_apps
+ */
+const express = require('express');
+const cors = require('cors');
 
+const app = express();
 
-    // // Human readable ID for our import job
-    // const importID = Date();    
+// Automatically allow cross-origin requests
+app.use(cors({ origin: true }));
 
-    // // Root Collection for all sample imports
-    // const rootCollection = process.env.NODE_ENV === 'production' ? 'samples' : 'samplesUnitTests';
-    // const rootCollectionRef = admin.firestore().collection(rootCollection); 
+app.get('/:setId', (req, res) => {
 
-    // /**
-    //  * Import each CSV files
-    //  */
-    // csvImports.forEach( async (csv) => {
+    // The requested data setId to retrieve. Currently: storrs or windham
+    const setId = req.params.setId;
 
-    //     // The collection for the current import
-    //     let collectionRef = rootCollectionRef.doc( csv.id ).collection( importID );      
+    // Set up our JSON response
+    let json = {
+        currentSampleSet: {
+            "collectionID": setId,
+            "mostRecentCollectionDate": ''
+        },
+        samples: []
+    };
 
-    //     // Most recent collection date
-    //     let mostRecentCollectionDate = "";
+    // Determines which CSV file to fetch
+    const csv = csvImports.filter(instance => instance.id === setId);
 
-
-    //     /**
-    //      * Read and parse the CSV
-    //      * 
-    //      * @url https://csv.js.org/parse/api/sync/
-    //      */
-    //     let csvData;
-    //     try {
-    //         let { body } = await got(csv.url);
-    //         csvData = body;
-    //     } catch (error) {
-    //         return res.send(`Couldn't fetch CSV file: ${error}`)            
-    //     }
-    //     const records = parse(csvData, {
-    //         columns: true,
-    //         skip_empty_lines: true,
-    //         trim: true
-    //     })
-
-    //     let chunks = chunkArray(records, 500);
-
-    //     chunks.forEach( async (chunk, index) => {
-
-    //         let batches = [];
-    //         batches[index] = db.batch();
-
-    //         // Iterate over each record/row in the CSV
-    //         chunk.forEach( async (record) => {
-
-                
-    //             // use empty column name as "id"
-    //             let id = record[''];
-    //             delete record[''];
-
-    //             // Rename locations in the Storrs csv only
-    //             if(record['location']){
-    //                 record['location'] = mappings[record['location']];
-    //             }
-                
-
-    //             if (record.date.replace('-', '') > mostRecentCollectionDate.replace('-', '') && record.date !== 'NA'){
-    //                 mostRecentCollectionDate = record.date;
-    //             }
-
-    //             batches[index].set(collectionRef.doc(id), record, {merge: true})
-
-
-    //         });
-
-    //         await batches[index].commit();
-
-    //     });
-
-    //     await rootCollectionRef.doc( csv.id ).set({
-    //         "currentSampleSet": {
-    //             "collectionID": importID,
-    //             "mostRecentCollectionDate": mostRecentCollectionDate
-    //         }
-    //     }, {merge: true})         
+    // https://cloud.google.com/storage/docs/downloading-objects#storage-download-object-nodejs
+    bucket.file(csv[0].ref).download().then(data =>{
         
+        // Parse the CSV file
+        const records = parse(data[0], {
+            columns: true,
+            skip_empty_lines: true,
+            trim: true
+        })
 
-    // });
+        // Clean the data before output
+        records.forEach( (record, i, arr) => {
+
+            // Assign an id
+            record.id = record[''];
+            delete record[''];
+
+            // Rename locations in the Storrs csv only
+            if(record['location']){
+                record['location'] = mappings[record['location']];
+            }
+
+            // Keeps track of the most recent collection date
+            if (record.date.replace('-', '') > json.currentSampleSet.mostRecentCollectionDate.replace('-', '') && record.date !== 'NA'){
+                json.currentSampleSet.mostRecentCollectionDate = record.date;
+            } 
+        }); 
+
+        // Add the cleansed records to our json response
+        json.samples = records;
+
+        // Request that the browser cache this request for 12 hours
+        res.set('Cache-Control', 'public, max-age=43200, s-maxage=43200');
+
+        return res.status(200).send(json);
+    }).catch(error =>{
+        return res.status(404).send(error);
+    })
 
 });
+exports.samples = functions.https.onRequest(app);

@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&display=swap" rel="stylesheet">
+
+    <!-- Material Design Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="covid-dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <title>Covid Dashboard</title>
+  </head>
+  <body>
+    <section id="app" class="container-fluid dashboard-container">
+      <!-- <div>
+        <h2>Location-specific Wastewater Testing Results</h2>
+        <p>UConn is pioneering a research method that allows us to regularly test waste water around campus to make
+          an early determination on the presence of COVID-19. We are using two different measurements for COVID-19 in wastewater: 
+          E and N1 genes. We monitor two genes to increase the odds that we will be able to detect
+          SARS-CoV2 even if there are strains that have mutated a mismatch of our probes. The graph below is a
+          visual representation of the two different measurements we are using to test for COVID-19 in wastewater.</p>
+
+          <p>The X Axis of the chart below shows wastewater <strong>collection dates</strong> for the selected location.</p>
+          <p>The Y Axis of the chart below shows the detectable E and N1 genes for each wastewater collection date.</p>
+      </div> -->
+
+      <div class="row">
+        <div class="col col-lg-12">
+          <div class="row">
+            <div class="col col-lg-12">
+              <div class="content wastewater">
+                <div class="label-flex">
+                  <div class="dropdown heading">
+                    Location:
+                    <button class="btn btn-interior dropdown-toggle" type="button" id="dropdownMenuButton" 
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{currentLocation}}</button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                      <a class="dropdown-item" v-for = "location in collectionLocations" @click="updateLocation(location)" href="#">{{location}}</a>
+                    </div>
+                  </div>
+                  <!-- <div class="labels">
+                    <h5><span class="material-icons">brightness_1</span>N1 Value</h5>
+                    <h5><span class="material-icons">brightness_1</span>E Value</h5>
+                  </div> -->
+                </div>
+                <div id="curve_chart" ></div>
+                
+              </div>
+            </div>           
+          </div>
+        </div>       
+      </div>
+    </section>
+
+    
+
+
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+    
+    <!-- Optional JavaScript -->
+    <script>$(document).ready(function(){
+        $('[data-toggle="tooltip"]').tooltip();
+      });
+    </script>
+
+    <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.2.1/firebase-firestore.js"></script>
+
+
+<script>
+  // Your web app's Firebase configuration
+  var firebaseConfig = {
+    apiKey: "AIzaSyAdC_F6vZblWqDKwwsN-GZUU9FpsTetFZA",
+    authDomain: "covid-dashboard-f47ce.firebaseapp.com",
+    projectId: "covid-dashboard-f47ce",
+    storageBucket: "covid-dashboard-f47ce.appspot.com",
+    messagingSenderId: "401683634457",
+    appId: "1:401683634457:web:291628b8920661f2ec8d88"
+  };
+
+</script>
+
+    <script>
+
+      var app = new Vue({
+        el: '#app',
+        data: {
+          pageHeader: 'Wastewater Testing @ UConn',
+          currentSampleSet:"",
+          allData:{},
+          content: [
+            
+
+          ],
+          collectionDates: Array,
+          collectionLocations:[
+          "QuarantineDorm",
+          "DormComplex1",
+          "DormComplex2",
+          "StudentUnion",
+          "DormComplex3",
+          "WastewaterTreatmentPlant",
+          "IsolationDorm1",
+          "DormComplex4",
+          "LibraryandCentralCampus",
+          "DormComplex5",
+          "ApartmentComplex1",
+          "ApartmentComplex2",
+          "ApartmentComplex3",
+          "ApartmentComplex4",
+          "IsolationDorm2"
+          ].sort(),
+          activeCollectionDate:String,
+          currentLocation: "WastewaterTreatmentPlant"
+        },
+        mounted() {
+          firebase.initializeApp(firebaseConfig);
+
+          this.getSampleSet();
+        },
+        
+
+
+
+        methods: {
+          prepChart() {
+            this.content = [];
+            let that = this;
+            google.charts.load('current', {'packages':['line','corechart']});
+
+            
+            let samples = that.allData;
+             
+            
+            
+            
+            var samplesMap = Object.keys(samples);
+            
+            for (var i = 0; i < 20; i++) {
+                var sample = samples[samplesMap[i]];
+                console.log(sample);
+                
+                var year = new Date(sample.date).getFullYear();
+                var month = new Date(sample.date).getMonth() + 1;
+                var day = new Date(sample.date).getUTCDate();
+
+                var usableDate = year + "-" + month + "-" + day;
+                // console.log("usable date:" + usableDate);
+                // console.log("sample date:" + sample.date);
+
+                preppedSample = [new Date(sample.date + "T00:00:00"), +sample.n1PMMoV || 0, +sample.ePMMoV || 0];
+                this.content.unshift(preppedSample);
+            }
+            
+            google.charts.setOnLoadCallback(this.drawChart);
+          },
+
+          updateLocation(loc) {
+            this.currentLocation = loc;
+            this.getSampleSet();
+          },
+
+          drawChart() {
+            let that = this;
+            //this.content.unshift(['Collection Date', 'N1', 'E']);
+           
+
+            var data = new google.visualization.DataTable();
+            var NumberFormat = new google.visualization.NumberFormat(
+            {pattern:'##.############'}
+            );
+            
+            data.addColumn('date', "date");
+            data.addColumn("number", "N1 Value");
+            data.addColumn("number", "E Value");
+ 
+
+            data.addRows(that.content);
+
+    
+
+            NumberFormat.format(data, 1);
+            NumberFormat.format(data, 2);
+            
+
+            var options = {
+              legend: { position: 'top' },
+              vAxis: {
+                title: 'Detectable SARS-CoV2',
+                scaleType: 'linear'
+              },
+              
+              hAxis: {
+
+              }
+              
+            };
+
+            var chart = new google.visualization.AreaChart(document.getElementById('curve_chart'));
+            
+            chart.draw(data, options);
+          },
+
+          getSampleSet() {
+            let that = this;
+            // Initialize Firebase
+              var db = firebase.firestore()
+              var docRef = db.collection("samples").doc("currentSampleSet");
+              var mostRecentCollectionDate = "";
+              var content = [];
+              var dates = [];
+              var locations = [];
+
+              var collectionDates = {};
+
+              var endpoint = "https://us-central1-covid-dashboard-f47ce.cloudfunctions.net/samples/storrs";
+
+              fetch(endpoint)
+              .then(
+                function(response) {
+                  if (response.status !== 200) {
+                    console.log('Looks like there was a problem. Status Code: ' +
+                      response.status);
+                    return;
+                  }
+
+                  // Examine the text in the response
+                  response.json().then(function(data) {
+                    
+                    that.currentSampleSet = data.currentSampleSet.collectionID;
+                    mostRecentCollectionDate = data.currentSampleSet.mostRecentCollectionDate;
+                    samples = data.samples.sort((a, b) => (a.date < b.date) ? 1 : -1)
+
+                    samples.forEach(function(data){
+                      if(data.location == that.currentLocation) {
+                      if(dates.indexOf(data.date) == -1) {
+                        collectionDates[data.date] = [];
+                        dates.unshift(data.date);
+                        collectionDates[data.date].date = data.date;
+                        collectionDates[data.date].ePMMoV = "NA"
+                        collectionDates[data.date].n1PMMoV = "NA"
+                      }
+
+                      collectionDates[data.date][data.Target] = data.Relative;
+                      }
+
+                          
+                    });
+                          that.allData = collectionDates;
+                          that.prepChart();
+  
+                  });
+                }
+              )
+              .catch(function(err) {
+                console.log('Fetch Error :-S', err);
+              });
+
+              // docRef.get().then(function(doc) {
+              //     if (doc.exists) {
+              //         console.log("Current Sample Set Collection ID:", doc.data());
+              //         that.currentSampleSet = doc.data().collectionID;
+              //         mostRecentCollectionDate = doc.data().mostRecentCollectionDate;
+                      
+              //         // now go into that sample
+              //         contentRef = db.collection("samples").doc("imported").collection(that.currentSampleSet);
+              //           contentRef
+              //           //.where("location", "==", that.currentLocation)
+              //           .orderBy("date", "desc")
+              //           .get().then(function(querySnapshot) {
+                          
+              //             querySnapshot.forEach(function(doc) {
+              //                data = doc.data();
+
+              //                if(data.location == that.currentLocation) {
+              //                 if(dates.indexOf(data.date) == -1) {
+              //                   collectionDates[data.date] = [];
+              //                   dates.unshift(data.date);
+              //                   collectionDates[data.date].date = data.date;
+              //                   collectionDates[data.date].ePMMoV = "NA"
+              //                   collectionDates[data.date].n1PMMoV = "NA"
+              //                 }
+
+              //                 collectionDates[data.date][data.Target] = data.Relative;
+              //                }
+              //             });
+
+                          
+              //             that.allData = collectionDates;
+              //             that.prepChart();
+                          
+              //           });
+                      
+                      
+              //     } else {
+              //         // doc.data() will be undefined in this case
+              //         console.log("No such document!");
+              //     }
+              // }).catch(function(error) {
+              //     console.log("Error getting document:", error);
+              // });
+
+          }, 
+
+          prepareData(data) {
+
+            var locMap = {};
+
+            
+
+            // prep the location map with a bunch of empty arrays
+            let that = this;
+            for (var i = 0; i < that.collectionLocations.length; i++) {
+              locMap[that.collectionLocations[i]] = {
+                samples:[]
+              }
+
+              for (var ii = 0; ii < that.collectionDates.length; ii++) {
+                var date = that.collectionDates[ii];
+                locMap[that.collectionLocations[i]].samples[date] =  [];
+                locMap[that.collectionLocations[i]].samples[date]['date'] =  "";
+                locMap[that.collectionLocations[i]].samples[date]['ePMMoV'] = "NA";
+                locMap[that.collectionLocations[i]].samples[date]['n1PMMoV'] = "NA";
+              }
+            }
+
+            
+            
+            for(var i=0; i < data.length; i++) {
+              //put each sample in the right array for the location
+              /**
+              *         location
+                          samples [date]
+                            eppmov
+                            n1ppmov
+              *
+              *
+              */
+              var sample = data[i];
+
+              
+
+              
+                locMap[sample['location']].samples[sample['date']]['date'] = sample.date;
+                locMap[sample['location']].samples[sample['date']][sample.Target] = sample.Relative;
+              
+
+
+
+
+            }
+
+            that.allData = locMap;
+
+            that.prepChart();
+
+            
+            
+          }
+        }
+      })
+
+    </script>
+  </body>
+</html>

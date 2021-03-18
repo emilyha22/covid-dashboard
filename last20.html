@@ -225,49 +225,92 @@
 
               var collectionDates = {};
 
-              docRef.get().then(function(doc) {
-                  if (doc.exists) {
-                      console.log("Current Sample Set Collection ID:", doc.data());
-                      that.currentSampleSet = doc.data().collectionID;
-                      mostRecentCollectionDate = doc.data().mostRecentCollectionDate;
-                      
-                      // now go into that sample
-                      contentRef = db.collection("samples").doc("imported").collection(that.currentSampleSet);
-                        contentRef
-                        //.where("location", "==", that.currentLocation)
-                        .orderBy("date", "desc")
-                        .get().then(function(querySnapshot) {
+              var endpoint = "https://us-central1-covid-dashboard-f47ce.cloudfunctions.net/samples/storrs";
+
+              fetch(endpoint)
+              .then(
+                function(response) {
+                  if (response.status !== 200) {
+                    console.log('Looks like there was a problem. Status Code: ' +
+                      response.status);
+                    return;
+                  }
+
+                  // Examine the text in the response
+                  response.json().then(function(data) {
+                    
+                    that.currentSampleSet = data.currentSampleSet.collectionID;
+                    mostRecentCollectionDate = data.currentSampleSet.mostRecentCollectionDate;
+                    samples = data.samples.sort((a, b) => (a.date < b.date) ? 1 : -1)
+
+                    samples.forEach(function(data){
+                      if(data.location == that.currentLocation) {
+                      if(dates.indexOf(data.date) == -1) {
+                        collectionDates[data.date] = [];
+                        dates.unshift(data.date);
+                        collectionDates[data.date].date = data.date;
+                        collectionDates[data.date].ePMMoV = "NA"
+                        collectionDates[data.date].n1PMMoV = "NA"
+                      }
+
+                      collectionDates[data.date][data.Target] = data.Relative;
+                      }
+
                           
-                          querySnapshot.forEach(function(doc) {
-                             data = doc.data();
-
-                             if(data.location == that.currentLocation) {
-                              if(dates.indexOf(data.date) == -1) {
-                                collectionDates[data.date] = [];
-                                dates.unshift(data.date);
-                                collectionDates[data.date].date = data.date;
-                                collectionDates[data.date].ePMMoV = "NA"
-                                collectionDates[data.date].n1PMMoV = "NA"
-                              }
-
-                              collectionDates[data.date][data.Target] = data.Relative;
-                             }
-                          });
-
-                          
+                    });
                           that.allData = collectionDates;
                           that.prepChart();
-                          
-                        });
-                      
-                      
-                  } else {
-                      // doc.data() will be undefined in this case
-                      console.log("No such document!");
-                  }
-              }).catch(function(error) {
-                  console.log("Error getting document:", error);
+  
+                  });
+                }
+              )
+              .catch(function(err) {
+                console.log('Fetch Error :-S', err);
               });
+
+              // docRef.get().then(function(doc) {
+              //     if (doc.exists) {
+              //         console.log("Current Sample Set Collection ID:", doc.data());
+              //         that.currentSampleSet = doc.data().collectionID;
+              //         mostRecentCollectionDate = doc.data().mostRecentCollectionDate;
+                      
+              //         // now go into that sample
+              //         contentRef = db.collection("samples").doc("imported").collection(that.currentSampleSet);
+              //           contentRef
+              //           //.where("location", "==", that.currentLocation)
+              //           .orderBy("date", "desc")
+              //           .get().then(function(querySnapshot) {
+                          
+              //             querySnapshot.forEach(function(doc) {
+              //                data = doc.data();
+
+              //                if(data.location == that.currentLocation) {
+              //                 if(dates.indexOf(data.date) == -1) {
+              //                   collectionDates[data.date] = [];
+              //                   dates.unshift(data.date);
+              //                   collectionDates[data.date].date = data.date;
+              //                   collectionDates[data.date].ePMMoV = "NA"
+              //                   collectionDates[data.date].n1PMMoV = "NA"
+              //                 }
+
+              //                 collectionDates[data.date][data.Target] = data.Relative;
+              //                }
+              //             });
+
+                          
+              //             that.allData = collectionDates;
+              //             that.prepChart();
+                          
+              //           });
+                      
+                      
+              //     } else {
+              //         // doc.data() will be undefined in this case
+              //         console.log("No such document!");
+              //     }
+              // }).catch(function(error) {
+              //     console.log("Error getting document:", error);
+              // });
 
           }, 
 
